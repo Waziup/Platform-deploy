@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  proxy-front:
+    build: ./proxy-frontend
+    image: waziup/proxy-frontend:1.1.cr2
+    ports:
+      - "80:80"
+      - "443:443"
+    network_mode: host
+  proxy:
+    build: ./proxy
+    image: waziup/proxy:1.1.cr2-staging
+    ports:
+      - "80:80"
+      - "443:443"
+    network_mode: host
+    extra_hosts:
+      - "api-server:127.0.0.1"
+      - "dashboard:127.0.0.1"
+      - "keycloak:127.0.0.1"
+      - "website:127.0.0.1"
+      - "staging:127.0.0.1"
+    environment:
+      - WAZIUP_BASE_URL=staging.waziup.io
+    entrypoint: "/etc/nginx/conf.d/docker-entrypoint.sh"
