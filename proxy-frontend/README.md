@@ -1,9 +1,9 @@
-
-WAZIUP Proxy
-============
+WAZIUP Front-end Proxy
+======================
 
 This proxy is the entry point to the waziup platform in a Cloud configuration.
-
+It routes the traffic to both production (*.waziup.io) and staging (*.staging.waziup.io) platforms.
+It also adds HTTPS capacity to the platform using TLS termination.
 
 Usage
 -----
@@ -11,7 +11,8 @@ Usage
 The proxy is intended to be run as a docker container in a Cloud.
 To create the container:
 ```
-docker build -t waziup/proxy .
+docker build -t waziup/proxy-frontend .
+docker push waziup/proxy-frontend
 ```
 
 Develop
