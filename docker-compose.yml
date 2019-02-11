@@ -1,16 +1,19 @@
 version: '3'
 
 services:
+  #front-end proxy for load balancer
   proxy-front:
     build: ./proxy-frontend
-    image: waziup/proxy-frontend:1.1.cr2
+    image: waziup/proxy-frontend:1.1
     ports:
       - "80:80"
       - "443:443"
     network_mode: host
+
+  #proxy for routing internal components
   proxy:
     build: ./proxy
-    image: waziup/proxy:1.1.cr2-staging
+    image: waziup/proxy:1.1
     ports:
       - "80:80"
       - "443:443"
@@ -24,3 +27,29 @@ services:
     environment:
       - WAZIUP_BASE_URL=staging.waziup.io
     entrypoint: "/etc/nginx/conf.d/docker-entrypoint.sh"
+
+  dashboard-production:
+    # Specific images should be built for each environment (local, staging, production).
+    image: waziup/dashboard:1.1.1-production
+    build:
+      context: ./dashboard
+      args:
+        - SERVER_PORT=3000
+        - SERVER_URL=https://dashboard.waziup.io
+        - KEYCLOAK_URL=https://keycloak.waziup.io/auth
+        - API_SERVER_URL=https://api.waziup.io/api
+    ports:
+      - "3000:3000"
+
+  dashboard-staging:
+    # Specific images should be built for each environment (local, staging, production).
+    image: waziup/dashboard:1.1-staging
+    build:
+      context: ./dashboard
+      args:
+        - SERVER_PORT=3000
+        - SERVER_URL=https://dashboard.staging.waziup.io
+        - KEYCLOAK_URL=https://keycloak.staging.waziup.io/auth
+        - API_SERVER_URL=https://api.staging.waziup.io/api
+    ports:
+      - "3000:3000"
