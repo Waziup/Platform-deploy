@@ -24,7 +24,7 @@ To run the proxy locally, you need to generate a self-signed certificate:
 ```
 The certificate will be used by the proxy. To start it:
 ```
-docker run -it -p 80:80 -p 443:443 -v <platform_host_path>/proxy:/certs/live/dev.waziup.io/ waziup/proxy
+docker run -it -p 80:80 -p 443:443 -v <platform_host_path>/proxy:/certs/live/waziup.io/ waziup/proxy
 ```
 
 To test the proxy, we will use cURL. However, it is necessary to trust the self-signed certificate:
