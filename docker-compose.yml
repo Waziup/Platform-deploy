@@ -42,18 +42,20 @@ services:
         - SERVER_URL=https://dashboard.waziup.io
         - KEYCLOAK_URL=https://keycloak.waziup.io/auth
         - API_SERVER_URL=https://api.waziup.io/api
+        - NODE_ENV=production
     ports:
       - "3000:3000"
 
   dashboard-staging:
     # Specific images should be built for each environment (local, staging, production).
-    image: waziup/dashboard:1.2-staging
+    image: waziup/dashboard:2.0-staging
     build:
       context: ./dashboard
       args:
         - SERVER_PORT=3000
-        - SERVER_URL=https://dashboard.waziup.io
-        - KEYCLOAK_URL=https://keycloak.waziup.io/auth
-        - API_SERVER_URL=https://api.waziup.io/api
+        - SERVER_URL=https://dashboard.staging.waziup.io
+        - KEYCLOAK_URL=https://keycloak.staging.waziup.io/auth
+        - API_SERVER_URL=https://api.staging.waziup.io/api
+        - NODE_ENV=staging
     ports:
       - "3000:3000"
