@@ -2,3 +2,39 @@
 
 This repo contains manifests to deploy the Waziup platform on Amazon ECS and Kubernetes.
 It also contains proxies for routing trafic to the Platform.
+
+
+Database security
+-----------------
+
+mongoDB must be started with auth in order to avoid any hacking.
+https://docs.mongodb.com/manual/tutorial/enable-authentication/
+
+Add admin users:
+```
+use admin;
+db.createUser(
+  {
+    user: "admin",
+    pwd: "xxxxx",
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
+  }
+)
+
+use waziup;
+db.createUser({user: "admin", pwd: "xxxx", roles: [{role: "dbOwner", db: "waziup"}]});
+```
+
+Connection to DB:
+```
+mongo <IP>/waziup --quiet -u admin -p xxx --authenticationDatabase "admin"
+```
+
+
+Database debugging:
+-------------------
+
+Find devices without a Keycloak ID:
+```
+curl "http://35.157.161.231:1026/v2/entities?limit=1000&type=Device" -s -S --header 'Fiware-Service:waziup' | jq '.[]  | select(has("keycloak_id") | not) | .id' -r
+```

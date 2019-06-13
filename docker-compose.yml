@@ -34,7 +34,7 @@ services:
 
   dashboard-production:
     # Specific images should be built for each environment (local, staging, production).
-    image: waziup/dashboard:1.2-production
+    image: waziup/dashboard:2.0-production
     build:
       context: ./dashboard
       args:
