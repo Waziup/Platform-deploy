@@ -11,7 +11,7 @@ server {
   return 404;
 }
 
-# HTTP conf
+# API
 server {
   listen      80;
   server_name api.${WAZIUP_BASE_URL};
@@ -23,15 +23,18 @@ server {
     rewrite ^/api/v1/sensors/(.*)/measurements$      /api/v2/devices/$1/sensors break;
     rewrite ^/api/v1/sensors/(.*)$                   /api/v2/devices/$1 break;
     rewrite ^/api/v1/sensors$                        /api/v2/devices break;
+    rewrite ^/api/v1/auth/token$                     /api/v2/auth/token break;
 
-    proxy_pass http://localhost:800; 
-  }   
+    proxy_pass http://localhost:800;
+    proxy_set_header   Authorization "";
+  }
+
   location / {
     proxy_pass http://api-server:800; 
   }   
 }
 
-# Dashboard HTTP
+# Dashboard
 server {
   listen      80;
   server_name dashboard.${WAZIUP_BASE_URL};
@@ -40,7 +43,7 @@ server {
   }
 }
 
-# Keycloak HTTP
+# Keycloak
 server {
   listen      80;
   server_name keycloak.${WAZIUP_BASE_URL};
