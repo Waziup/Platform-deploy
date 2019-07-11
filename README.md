@@ -38,3 +38,20 @@ Find devices without a Keycloak ID:
 ```
 curl "http://35.157.161.231:1026/v2/entities?limit=1000&type=Device" -s -S --header 'Fiware-Service:waziup' | jq '.[]  | select(has("keycloak_id") | not) | .id' -r
 ```
+
+Backups
+-------
+
+Copy [this script](./waziup_backup.sh) on the production server.
+Add it to crontab:
+```
+crontab -e
+30 1 * * * /home/ec2-user/waziup_backup.sh
+```
+
+Since backups can be big, you should [mount a S3 bucket on Amazon](https://cloudkul.com/blog/mounting-s3-bucket-linux-ec2-instance/).
+Add this command to /etc/rc.local:
+```
+sudo s3fs waziup -o use_cache=/tmp -o allow_other -o uid=1001 -o mp_umask=002 -o multireq_max=5 /mnt/S3
+```
+
