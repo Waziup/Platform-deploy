@@ -10,7 +10,7 @@ Database security
 mongoDB must be started with auth in order to avoid any hacking.
 https://docs.mongodb.com/manual/tutorial/enable-authentication/
 
-Add admin users:
+As explained in the link above, first start the DB without auth. Then add admin users:
 ```
 use admin;
 db.createUser(
@@ -25,7 +25,7 @@ use waziup;
 db.createUser({user: "admin", pwd: "xxxx", roles: [{role: "dbOwner", db: "waziup"}]});
 ```
 
-Connection to DB:
+After this is done, restart the DB with auth. You can now connect to the DB with auth:
 ```
 mongo <IP>/waziup --quiet -u admin -p xxx --authenticationDatabase "admin"
 ```
@@ -53,5 +53,11 @@ Since backups can be big, you should [mount a S3 bucket on Amazon](https://cloud
 Add this command to /etc/rc.local:
 ```
 sudo s3fs waziup -o use_cache=/tmp -o allow_other -o uid=1001 -o mp_umask=002 -o multireq_max=5 /mnt/S3
+```
+
+A backup can be restored this way:
+```
+mongorestore -u admin -p <password> --authenticationDatabase "admin" /mnt/S3/backups/mongobackups/13-07-19/
+mysql -u root -p<password> -h 127.0.0.1 < /mnt/S3/backups/mysqlbackups/13-07-19.sql
 ```
 
