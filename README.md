@@ -10,13 +10,15 @@ Database security
 mongoDB must be started with auth in order to avoid any hacking.
 https://docs.mongodb.com/manual/tutorial/enable-authentication/
 
-Add admin users:
+Start the mongo container without auth (remove all env variables):
+
+Add admin users (replace xxx with the real password):
 ```
 use admin;
 db.createUser(
   {
     user: "admin",
-    pwd: "xxxxx",
+    pwd: "xxxx",
     roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
   }
 )
@@ -24,6 +26,8 @@ db.createUser(
 use waziup;
 db.createUser({user: "admin", pwd: "xxxx", roles: [{role: "dbOwner", db: "waziup"}]});
 ```
+
+restart the mongo container with auth.
 
 Connection to DB:
 ```
