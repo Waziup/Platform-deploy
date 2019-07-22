@@ -3,6 +3,31 @@
 This repo contains manifests to deploy the Waziup platform on Amazon ECS and Kubernetes.
 It also contains proxies for routing trafic to the Platform.
 
+VM install
+----------
+
+install some tools:
+```
+echo '[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/amazon/$releasever/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc' \
+    | sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo
+
+sudo yum install vim mysql mongodb-org-shell
+```
+
+
+Database volume
+---------------
+
+Databases files should not be hosted on the VM itself, rather on an attached volume.
+This avoids to lose all the data should the VM be terminated.
+Create a volume, attach it to the VM and mount it:
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumes.html
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
 
 Database security
 -----------------
