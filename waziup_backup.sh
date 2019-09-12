@@ -7,6 +7,6 @@ DATE=`date +"%d-%m-%y"`
 MONGO_DIR=/mnt/S3/backups/mongobackups/$DATE
 MYSQL_FILE=/mnt/S3/backups/mysqlbackups/$DATE.sql
 sudo mkdir -p $MONGO_DIR
-sudo mongodump --out $MONGO_DIR
-sudo mysqldump -h 127.0.0.1 -u root -proot_password --all-databases > $MYSQL_FILE
+sudo mongodump --quiet -u admin -p<password> --authenticationDatabase "admin" --out $MONGO_DIR
+sudo mysqldump -h 127.0.0.1 -u root -p<password> --all-databases > $MYSQL_FILE
 
