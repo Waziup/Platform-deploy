@@ -65,7 +65,6 @@ mongo <IP>/waziup --quiet -u admin -p xxx --authenticationDatabase "admin"
 Restore backups
 ---------------
 
-
 Since backups can be big, you should [mount a S3 bucket on Amazon](https://cloudkul.com/blog/mounting-s3-bucket-linux-ec2-instance/).
 Add this command to /etc/rc.local:
 ```
@@ -78,6 +77,7 @@ mongorestore -u admin -p <password> --authenticationDatabase "admin" /mnt/S3/bac
 mysql -u root -p<password> -h 127.0.0.1 < /mnt/S3/backups/mysqlbackups/20-07-19.sql
 ```
 
+Now add the regular backups:
 Copy [this script](./waziup_backup.sh) on the production server.
 Add it to crontab:
 ```
