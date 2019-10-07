@@ -93,4 +93,31 @@ Find devices without a Keycloak ID:
 curl "http://35.157.161.231:1026/v2/entities?limit=1000&type=Device" -s -S --header 'Fiware-Service:waziup' | jq '.[]  | select(has("keycloak_id") | not) | .id' -r
 ```
 
+SSL certificates
+----------------
 
+Install letsencrypt on the frontend VM:
+```
+wget https://dl.eff.org/certbot-auto
+sudo mv certbot-auto /usr/local/bin/certbot-auto
+sudo chown root /usr/local/bin/certbot-auto
+sudo chmod 0755 /usr/local/bin/certbot-auto
+```
+Let it generate the certificates:
+```
+sudo ./certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos -d waziup.io -d www.waziup.io -d api.waziup.io -d dashboard.waziup.io -d keycloak.waziup.io  -d api.staging.waziup.io -d dashboard.staging.waziup.io -d keycloak.staging.waziup.io -d iot-catalogue.waziup.io -d login.waziup.io -d remote.waziup.io
+```
+Add `--expand` to keep the same certificates.
+Run with `--dry-run` before, in order to make sure that the command is OK.
+
+This will generate the certifications in `/etc/letsencrypt/archive` and link them in `/etc/letsencrypt/live`.
+The nginx configuration will then reference the files in `/etc/letsencrypt/live/waziup.io`.
+
+
+Nginx configuration should also serve the folder `/etc/letsencrypt/www/_letsencrypt` on `http://*.waziup.io/.well-known/acme-challenge/`
+```
+location /.well-known/acme-challenge/ {
+   root /certs/www/_letsencrypt;
+}
+```
+This will allow certbot to renew our certificates regularly.
