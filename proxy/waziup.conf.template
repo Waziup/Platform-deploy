@@ -46,7 +46,7 @@ server {
 # Keycloak
 server {
   listen      80;
-  server_name keycloak.${WAZIUP_BASE_URL};
+  server_name keycloak.${WAZIUP_BASE_URL} login.${WAZIUP_BASE_URL};
   location / {
     proxy_pass http://keycloak:8080;
     proxy_set_header   Host $host;
@@ -56,4 +56,14 @@ server {
     proxy_read_timeout 90;
   }
 }
+
+# MQTT tunnel
+server {
+  listen      80;
+  server_name remote.${WAZIUP_BASE_URL};
+  location / {
+    proxy_pass http://wazigate-tunnel:8003;
+  }
+}
+
 
