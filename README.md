@@ -110,8 +110,10 @@ sudo ./certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  -
 Add `--expand` to keep the same certificates.
 Run with `--dry-run` before, in order to make sure that the command is OK.
 
-This will generate the certifications in `/etc/letsencrypt/archive` and link them in `/etc/letsencrypt/live`.
-The nginx configuration will then reference the files in `/etc/letsencrypt/live/waziup.io`.
+This will generate the certifications in `/etc/letsencrypt/archive` and create links in `/etc/letsencrypt/live`.
+A renew file will also be created in `/etc/letsencrypt/renew`.
+
+The nginx configuration will then reference the files in `/etc/letsencrypt/live/waziup.io`: https://github.com/Waziup/Platform-deploy/blob/master/proxy-frontend/waziup.conf#L10.
 
 
 Nginx configuration should also serve the folder `/etc/letsencrypt/www/_letsencrypt` on `http://*.waziup.io/.well-known/acme-challenge/`
