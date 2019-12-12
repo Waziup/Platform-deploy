@@ -105,7 +105,20 @@ sudo chmod 0755 /usr/local/bin/certbot-auto
 ```
 Let it generate the certificates:
 ```
-sudo ./certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos -d waziup.io -d www.waziup.io -d api.waziup.io -d dashboard.waziup.io -d keycloak.waziup.io  -d api.staging.waziup.io -d dashboard.staging.waziup.io -d keycloak.staging.waziup.io -d iot-catalogue.waziup.io -d login.waziup.io -d remote.waziup.io
+sudo /usr/local/bin/certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos \
+  -d waziup.io \
+  -d www.waziup.io \
+  -d api.waziup.io \
+  -d dashboard.waziup.io \
+  -d keycloak.waziup.io \
+  -d api.staging.waziup.io \
+  -d dashboard.staging.waziup.io \
+  -d keycloak.staging.waziup.io \
+  -d iot-catalogue.waziup.io \
+  -d login.waziup.io \
+  -d remote.waziup.io \
+  -d diy.waziup.io \
+  -d install.waziup.io
 ```
 Add `--expand` to keep the same certificates.
 Run with `--dry-run` before, in order to make sure that the command is OK.
