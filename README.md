@@ -105,7 +105,7 @@ sudo chmod 0755 /usr/local/bin/certbot-auto
 ```
 Let it generate the certificates:
 ```
-sudo /usr/local/bin/certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos \
+sudo /usr/local/bin/certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos --expand --dry-run \
   -d waziup.io \
   -d www.waziup.io \
   -d api.waziup.io \
@@ -118,9 +118,14 @@ sudo /usr/local/bin/certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_le
   -d login.waziup.io \
   -d remote.waziup.io \
   -d diy.waziup.io \
-  -d install.waziup.io
+  -d install.waziup.io \
+  -d waziup.org \
+  -d www.waziup.org \
+  -d forum.waziup.io \
+  -d downloads.waziup.io
 ```
-Add `--expand` to keep the same certificates.
+Use `--expand` to keep the same certificates and add some domains.
+Warning: removing domains will make certbot to create another certificate in a new folder.
 Run with `--dry-run` before, in order to make sure that the command is OK.
 
 This will generate the certifications in `/etc/letsencrypt/archive` and link them in `/etc/letsencrypt/live`.
