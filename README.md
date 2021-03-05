@@ -128,14 +128,10 @@ Use `--expand` to keep the same certificates and add some domains.
 Warning: removing domains will make certbot to create another certificate in a new folder.
 Run with `--dry-run` before, in order to make sure that the command is OK.
 
-This will generate the certifications in `/etc/letsencrypt/archive` and link them in `/etc/letsencrypt/live`.
-The nginx configuration will then reference the files in `/etc/letsencrypt/live/waziup.io`.
+This will generate the certifications in `/etc/letsencrypt/archive` and create links in `/etc/letsencrypt/live`.
+A renew file will also be created in `/etc/letsencrypt/renew`.
+
+The Nginx proxy will then use the certificates in order to add the HTTPS capacity: https://github.com/Waziup/Platform-deploy/blob/master/proxy-frontend/waziup.conf#L10.
 
 
-Nginx configuration should also serve the folder `/etc/letsencrypt/www/_letsencrypt` on `http://*.waziup.io/.well-known/acme-challenge/`
-```
-location /.well-known/acme-challenge/ {
-   root /certs/www/_letsencrypt;
-}
-```
-This will allow certbot to renew our certificates regularly.
+In order to let `certbot` renew the certificates automatically, we should also serve a particular letsencrypt folder on our proxy: https://github.com/Waziup/Platform-deploy/blob/master/proxy-frontend/letsencrypt.conf. This will allow `certbot` to verify that the domain is ours before renewing the certificates. 
