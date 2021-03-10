@@ -14,24 +14,6 @@ services:
     extra_hosts:
       - "website:127.0.0.1"
 
-  #proxy for routing internal components
-  proxy:
-    build: ./proxy
-    image: waziup/proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    network_mode: host
-    extra_hosts:
-      - "api-server:127.0.0.1"
-      - "dashboard:127.0.0.1"
-      - "keycloak:127.0.0.1"
-      - "website:127.0.0.1"
-      - "staging:127.0.0.1"
-    environment:
-      - WAZIUP_BASE_URL=staging.waziup.io
-    entrypoint: "/etc/nginx/conf.d/docker-entrypoint.sh"
-
   dashboard-production:
     # Specific images should be built for each environment (local, staging, production).
     image: waziup/dashboard:2.1-production
@@ -55,10 +37,10 @@ services:
       context: ./dashboard
       args:
         - SERVER_PORT=3001
-        - SERVER_URL=35.157.161.231
+        - SERVER_URL=https://staging.dashboard.waziup.io
         - KEYCLOAK_URL=https://keycloak.waziup.io/auth
         - API_SERVER_URL=https://api.waziup.io/api
-        - DOC_SERVER_URL=http://www.waziup.io:82/documentation/dashboard
+        - DOC_SERVER_URL=https://www.waziup.io/documentation/dashboard
         - NODE_ENV=staging
     ports:
       - "3000:3000"
