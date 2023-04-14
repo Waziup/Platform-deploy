@@ -16,7 +16,7 @@ enabled=1
 gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc' \
     | sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo
 
-sudo yum install vim mysql mongodb-org-shell mongodb-org-tools
+sudo yum install vim mysql mongodb-org-shell mongodb-org-tools postgresql
 ```
 
 
@@ -105,16 +105,12 @@ sudo chmod 0755 /usr/local/bin/certbot-auto
 ```
 Let it generate the certificates:
 ```
-sudo /usr/local/bin/certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos --expand --dry-run \
+sudo /usr/local/bin/certbot-auto certonly --cert-name waziup.io -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos --expand --dry-run \
   -d waziup.io \
   -d www.waziup.io \
   -d api.waziup.io \
-  -d dashboard.waziup.io \
   -d keycloak.waziup.io \
-  -d api.staging.waziup.io \
-  -d dashboard.staging.waziup.io \
-  -d keycloak.staging.waziup.io \
-  -d iot-catalogue.waziup.io \
+  -d dashboard.waziup.io \
   -d login.waziup.io \
   -d remote.waziup.io \
   -d diy.waziup.io \
@@ -122,7 +118,8 @@ sudo /usr/local/bin/certbot-auto certonly -a webroot -w /etc/letsencrypt/www/_le
   -d waziup.org \
   -d www.waziup.org \
   -d forum.waziup.io \
-  -d downloads.waziup.io
+  -d downloads.waziup.io \
+  -d lab.waziup.io
 ```
 Use `--expand` to keep the same certificates and add some domains.
 Warning: removing domains will make certbot to create another certificate in a new folder.
@@ -135,3 +132,18 @@ The Nginx proxy will then use the certificates in order to add the HTTPS capacit
 
 
 In order to let `certbot` renew the certificates automatically, we should also serve a particular letsencrypt folder on our proxy: https://github.com/Waziup/Platform-deploy/blob/master/proxy-frontend/letsencrypt.conf. This will allow `certbot` to verify that the domain is ours before renewing the certificates. 
+
+
+VPN
+---
+
+OpenVPN runs on the front-end VM. It allows to connect the staging server and possibly WaziGates.
+
+To install it, follow the instructions at:
+https://github.com/angristan/openvpn-install
+
+Use the default answer to all questions.
+This will produce a "ovpn" file for the first client. This file can be used to configure a client.
+On an Ubuntu machine, Go in the Networks Setting, VPN section and enter the file.
+The Client machine should connect automatically.
+
