@@ -1,6 +1,6 @@
 # Platform-deploy
 
-This repo contains manifests to deploy the Waziup platform on Amazon ECS and Kubernetes.
+This repo contains instructions to deploy the Waziup platform on Amazon ECS.
 It also contains proxies for routing trafic to the Platform.
 
 VM install
@@ -146,4 +146,4 @@ Use the default answer to all questions.
 This will produce a "ovpn" file for the first client. This file can be used to configure a client.
 On an Ubuntu machine, Go in the Networks Setting, VPN section and enter the file.
 The Client machine should connect automatically.
-
+You can reissue the command `openvpn-install` to get more client ovpn files.
