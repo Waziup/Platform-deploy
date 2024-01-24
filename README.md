@@ -140,6 +140,7 @@ date
 certbot renew --post-hook "docker stop $(docker ps -q --filter ancestor=waziup/proxy-frontend:latest)"
 } &>> /home/ec2-user/cert-renew.log
 ```
+This will attempt to renew the certificates weekly. In case of renewal, it reboots the proxy container so that the new certificates are taken into account.
 
 VPN
 ---
