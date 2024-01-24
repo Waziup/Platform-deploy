@@ -132,7 +132,14 @@ The Nginx proxy will then use the certificates in order to add the HTTPS capacit
 
 
 In order to let `certbot` renew the certificates automatically, we should also serve a particular letsencrypt folder on our proxy: https://github.com/Waziup/Platform-deploy/blob/master/proxy-frontend/letsencrypt.conf. This will allow `certbot` to verify that the domain is ours before renewing the certificates. 
-
+Place this script in `/etc/cron.weekly`:
+```
+#!/bin/sh
+{
+date
+certbot renew --post-hook "docker stop $(docker ps -q --filter ancestor=waziup/proxy-frontend:latest)"
+} &>> /home/ec2-user/cert-renew.log
+```
 
 VPN
 ---
