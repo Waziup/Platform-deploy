@@ -1,6 +1,6 @@
 FROM nginx:alpine
 
-ADD waziup.conf /etc/nginx/conf.d/waziup.conf
+ADD waziup.conf innotec21.conf /etc/nginx/conf.d/
 
 ADD nginx.conf /etc/nginx/nginx.conf
 
