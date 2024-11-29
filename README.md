@@ -119,7 +119,9 @@ sudo /usr/local/bin/certbot-auto certonly --cert-name waziup.io -a webroot -w /e
   -d www.waziup.org \
   -d forum.waziup.io \
   -d downloads.waziup.io \
-  -d lab.waziup.io
+  -d lab.waziup.io \
+  -d innotec21.de \
+  -d www.innotec21.de
 ```
 Use `--expand` to keep the same certificates and add some domains.
 Warning: removing domains will make certbot to create another certificate in a new folder.
