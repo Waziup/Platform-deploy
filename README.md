@@ -105,7 +105,10 @@ sudo chmod 0755 /usr/local/bin/certbot-auto
 ```
 Let it generate the certificates:
 ```
-sudo /usr/local/bin/certbot-auto certonly --cert-name waziup.io -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos --expand --dry-run \
+sudo certbot certonly \
+  --cert-name waziup.io \
+  -a webroot -w /etc/letsencrypt/www/_letsencrypt/ \
+  --agree-tos --expand --dry-run \
   -d waziup.io \
   -d www.waziup.io \
   -d api.waziup.io \
@@ -119,7 +122,11 @@ sudo /usr/local/bin/certbot-auto certonly --cert-name waziup.io -a webroot -w /e
   -d www.waziup.org \
   -d forum.waziup.io \
   -d downloads.waziup.io \
-  -d lab.waziup.io
+  -d lab.waziup.io \
+  -d innotec21.de -d www.innotec21.de \
+  -d kijanibox.eu -d www.kijanibox.eu \
+  -d kijanispace.eu -d www.kijanispace.eu
+
 ```
 Use `--expand` to keep the same certificates and add some domains.
 Warning: removing domains will make certbot to create another certificate in a new folder.
