@@ -144,7 +144,7 @@ Place this script in `/etc/cron.weekly`:
 #!/bin/sh
 {
 date
-certbot renew --post-hook "docker stop $(docker ps -q --filter ancestor=waziup/proxy-frontend:latest)"
+certbot renew --post-hook "docker stop $(docker ps -q --filter ancestor=waziup/proxy-frontend:2.6)"
 } &>> /home/ec2-user/cert-renew.log
 ```
 This will attempt to renew the certificates weekly. In case of renewal, it reboots the proxy container so that the new certificates are taken into account.
