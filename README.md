@@ -41,6 +41,7 @@ mongoDB must be started with auth in order to avoid any hacking.
 https://docs.mongodb.com/manual/tutorial/enable-authentication/
 
 Add admin users:
+
 ```
 use admin;
 db.updateUser(
@@ -58,6 +59,7 @@ db.createUser({user: "admin", pwd: "xxx", roles: [{role: "dbOwner", db: "waziup"
 Connection to DB:
 =======
 After this is done, restart the DB with auth. You can now connect to the DB with auth:
+
 ```
 mongo <IP>/waziup --quiet -u admin -p xxx --authenticationDatabase "admin"
 ```
@@ -67,11 +69,13 @@ Restore backups
 
 Since backups can be big, you should [mount a S3 bucket on Amazon](https://cloudkul.com/blog/mounting-s3-bucket-linux-ec2-instance/).
 Add this command to /etc/rc.local:
+
 ```
 sudo s3fs waziup -o use_cache=/tmp -o allow_other -o uid=1001 -o mp_umask=002 -o multireq_max=5 /mnt/S3
 ```
 
 A backup can be restored this way:
+
 ```
 mongorestore -u admin -p <password> --authenticationDatabase "admin" /mnt/S3/backups/mongobackups/13-07-19/
 mysql -u root -p<password> -h 127.0.0.1 < /mnt/S3/backups/mysqlbackups/20-07-19.sql
@@ -80,6 +84,7 @@ mysql -u root -p<password> -h 127.0.0.1 < /mnt/S3/backups/mysqlbackups/20-07-19.
 Now add the regular backups:
 Copy [this script](./waziup_backup.sh) on the production server.
 Add it to crontab:
+
 ```
 crontab -e
 30 1 * * * /home/ec2-user/waziup_backup.sh
@@ -89,6 +94,7 @@ Database debugging:
 -------------------
 
 Find devices without a Keycloak ID:
+
 ```
 curl "http://35.157.161.231:1026/v2/entities?limit=1000&type=Device" -s -S --header 'Fiware-Service:waziup' | jq '.[]  | select(has("keycloak_id") | not) | .id' -r
 ```
@@ -97,13 +103,16 @@ SSL certificates
 ----------------
 
 Install letsencrypt on the frontend VM:
+
 ```
 wget https://dl.eff.org/certbot-auto
 sudo mv certbot-auto /usr/local/bin/certbot-auto
 sudo chown root /usr/local/bin/certbot-auto
 sudo chmod 0755 /usr/local/bin/certbot-auto
 ```
+
 Let it generate the certificates:
+
 ```
 sudo certbot certonly \
   --cert-name waziup.io \
@@ -125,9 +134,10 @@ sudo certbot certonly \
   -d lab.waziup.io \
   -d innotec21.de -d www.innotec21.de \
   -d kijanibox.eu -d www.kijanibox.eu \
-  -d kijanispace.eu -d www.kijanispace.eu
-
+  -d kijanispace.eu -d www.kijanispace.eu \
+  -d majiup.com -d www.majiup.com \
 ```
+
 Use `--expand` to keep the same certificates and add some domains.
 Warning: removing domains will make certbot to create another certificate in a new folder.
 Run with `--dry-run` before, in order to make sure that the command is OK.
