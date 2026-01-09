@@ -1,7 +1,5 @@
-version: '3'
-
 services:
-  #front-end proxy for load balancer
+  # Front-end proxy for load balancer
   proxy-front:
     build: ./proxy-frontend
     image: waziup/proxy-frontend
