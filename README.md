@@ -114,7 +114,32 @@ sudo chmod 0755 /usr/local/bin/certbot-auto
 Let it generate the certificates:
 
 ```
-sudo certbot certonly --cert-name waziup.io -a webroot -w /etc/letsencrypt/www/_letsencrypt/  --agree-tos --expand --dry-run -d waziup.io -d www.waziup.io -d api.waziup.io -d keycloak.waziup.io -d dashboard.waziup.io -d login.waziup.io -d remote.waziup.io -d diy.waziup.io -d install.waziup.io -d waziup.org -d www.waziup.org -d forum.waziup.io -d downloads.waziup.io -d lab.waziup.io -d innotec21.de -d www.innotec21.de -d osirris.waziup.org
+sudo certbot certonly \
+  --cert-name waziup.io \
+  -a webroot -w /etc/letsencrypt/www/_letsencrypt/ \
+  --agree-tos --expand --dry-run \
+  -d waziup.io \
+  -d www.waziup.io \
+  -d api.waziup.io \
+  -d keycloak.waziup.io \
+  -d dashboard.waziup.io \
+  -d login.waziup.io \
+  -d remote.waziup.io \
+  -d diy.waziup.io \
+  -d install.waziup.io \
+  -d waziup.org \
+  -d www.waziup.org \
+  -d forum.waziup.io \
+  -d downloads.waziup.io \
+  -d lab.waziup.io \
+  -d innotec21.de -d www.innotec21.de \
+  -d osirris.waziup.io -d osirris.waziup.org \
+  -d kijanibox.eu -d www.kijanibox.eu \
+  -d kijanispace.eu -d www.kijanispace.eu \
+  -d majiup.com -d www.majiup.com \
+  -d app.wazilab.io
+
+ docker exec $(docker container ls --quiet --filter label=certbot-renew-hook-target) nginx -s reload
 ```
 
 Use `--expand` to keep the same certificates and add some domains.

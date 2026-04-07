@@ -90,7 +90,6 @@ ENV/
 
 data/
 old/
-.env
 
 *node_modules*
 *mochawesome*
