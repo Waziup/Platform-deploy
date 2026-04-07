@@ -166,7 +166,7 @@ This will attempt to renew the certificates weekly. In case of renewal, it reboo
 VPN
 ---
 
-OpenVPN runs on the front-end VM. It allows to connect the staging server and possibly WaziGates.
+OpenVPN runs on the front-end VM. It allows to connect the staging server.
 
 To install it, follow the instructions at:
 https://github.com/angristan/openvpn-install
