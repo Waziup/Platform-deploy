@@ -14,5 +14,5 @@ https://github.com/angristan/openvpn-install
 Then install and run Waziup OpenVPN Rest API:
 https://github.com/Waziup/openvpn-api/tree/main
 
-Also install NGINX and set the wazigate.conf file in the folder /etc/nginx/conf/.
+Also install NGINX and set the [wazigate.conf](./wazigate.conf) file in the folder /etc/nginx/conf/.
 
