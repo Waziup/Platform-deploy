@@ -135,7 +135,7 @@ sudo certbot certonly \
   -d innotec21.de -d www.innotec21.de \
   -d osirris.waziup.io -d osirris.waziup.org \
   -d kijanibox.eu -d www.kijanibox.eu \
-  -d kijanispace.eu -d www.kijanispace.eu \
+  -d kijanispace.eu -d www.kijanispace.eu -d api.kijanispace.eu \
   -d majiup.com -d www.majiup.com \
   -d app.wazilab.io
 
