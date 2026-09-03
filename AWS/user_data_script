@@ -1,0 +1,38 @@
+#!/bin/bash
+set -x
+
+yum update -y
+yum install -y unzip
+
+# Install AWS CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+# Reattach EBS volume
+INSTANCE_ID=`ec2-metadata -i | cut -f2 -d" "`
+aws ec2 attach-volume --volume-id vol-0f6bd7a4018af65c6 --device /dev/xvdf --instance-id $INSTANCE_ID --region eu-central-1
+sleep 10s
+
+#remount data volume
+mkdir /data
+echo "/dev/xvdf /data xfs defaults,noatime" | tee -a /etc/fstab
+mount -a
+
+# Reattach IP
+aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id eipalloc-0f270cef81fa8e00c --allow-reassociation 
+
+# Attach cluster
+echo ECS_CLUSTER=waziup-yellow >> /etc/ecs/ecs.config
+echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config
+
+# Install base tools
+echo '[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/amazon/$releasever/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc' | sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo
+   
+yum update -y
+yum install -y jq vim mysql postgresql mongodb-org-shell mongodb-org-tools 
