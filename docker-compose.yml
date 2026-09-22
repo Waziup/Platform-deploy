@@ -8,7 +8,8 @@ services:
       - "443:443"
     network_mode: host
     volumes:
-      - ./certs:/certs
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/html/.well-known/acme-challenge/:/var/www/html/.well-known/acme-challenge/:ro
     extra_hosts:
       - "website:127.0.0.1"
 

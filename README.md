@@ -116,7 +116,7 @@ Let it generate the certificates:
 ```
 sudo certbot certonly \
   --cert-name waziup.io \
-  -a webroot -w /etc/letsencrypt/www/_letsencrypt/ \
+  -a webroot -w /var/www/html \
   --agree-tos --expand --dry-run \
   -d waziup.io \
   -d www.waziup.io \
@@ -154,6 +154,16 @@ The Nginx proxy will then use the certificates in order to add the HTTPS capacit
 
 
 In order to let `certbot` renew the certificates automatically, we should also serve a particular letsencrypt folder on our proxy: https://github.com/Waziup/Platform-deploy/blob/master/proxy-frontend/letsencrypt.conf. This will allow `certbot` to verify that the domain is ours before renewing the certificates. 
+
+The bootstrap script initially obtains the `waziup.io` certificate with the standalone authenticator, before the proxy is running. Subsequent renewals explicitly override that certificate's authenticator with webroot:
+```
+certbot renew \
+  --cert-name waziup.io \
+  --webroot \
+  --webroot-path /var/www/html
+```
+The proxy mounts `/etc/letsencrypt` at the same path inside the container and mounts `/var/www/html` at the same path for ACME challenges. Nginx serves `/.well-known/acme-challenge/` from `/var/www/html/.well-known/acme-challenge/`. The `porai.ai` certificate continues to use its IONOS DNS-01 renewal configuration.
+
 Place this script in `/etc/cron.weekly`:
 ```
 #!/bin/sh
