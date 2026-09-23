@@ -1,5 +1,10 @@
 #!/bin/bash
 # EC2 user data script for an Amazon Linux 2023 AMI.
+#
+# Output of this script is collected in 
+#   cat /var/log/cloud-init-output.log
+#
+
 set -Eeuo pipefail
 
 # 0. Configure default SSH access
@@ -12,7 +17,7 @@ chown ec2-user:ec2-user /home/ec2-user/.ssh/authorized_keys
 # 1. Update packages & install Certbot, Cronie, and Python Pip
 dnf update -y
 dnf swap curl-minimal curl -y
-dnf install -y certbot cronie python3-pip
+dnf install -y certbot cronie python3-pip ecs-init
 
 # Enable and start cron service for certificate renewals
 systemctl enable --now crond.service
@@ -45,6 +50,7 @@ aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id eipalloc-
 
 
 # 5. Attach instance to ECS cluster
+systemctl enable --now ecs
 echo ECS_CLUSTER=waziup-frontend >> /etc/ecs/ecs.config
 echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config
 
