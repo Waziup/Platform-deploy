@@ -1,6 +1,6 @@
 #!/bin/bash
 # EC2 user data script for an Amazon Linux 2023 AMI.
-set -x
+set -Eeuo pipefail
 
 # 0. Configure default SSH access
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDf4iVKWrUaf8uV2Y4JIYovicPoqCIJRNlTpseFlizzMCa2CpicyrXgbvaZN6TeJoGuPlVMH0hzmMPuezDFyrSWpn71YBMT8KKXhB5jbR0RrMVSCqLlgWdXzmjeH1qxhdY1bu/q9t1oot6MWYEXkdTJOwKwDI8jzwiSfoZu1LR6tLNNdHAFLI8/NF+UKcvYCS8lIr9zF3zPBdMR7Y7rg973wW+JFUFuk5typa6i7EfFcT74j7lrgeO/lZgJY0BG1J5jsgiXDn37NrcgupJMPrJiW2y25RnflMJQ0XIp4DCblviJxEOFUflW9rZ8xowqbY0nM82v7y9eI6zHZAP3qSeB9Eo6hE9Lv1KavgVs9ilSZJc1w8FhHd3se/3mWqUqqWWoiLvWm3QvjCaZ/DLU9gZAvCzPwnicoQ+89JhppW9vsbK4SZM/avo4lIevqkOtrY0CjaL+0vZF2ow16laWP4f226nyJ5gSmPA1b6Ml8BERDE0wYWeMdKyp8Bmd7JmJXTk= cdupont" >> /home/ec2-user/.ssh/authorized_keys
