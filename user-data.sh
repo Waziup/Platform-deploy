@@ -56,6 +56,7 @@ chmod 700 /usr/local/sbin/openvpn-install
 /usr/local/sbin/openvpn-install install \
   --endpoint "18.195.197.182" \
   --client waziup
+  --tls-sig crypt
 
 
 # 7. Issue HTTP Standalone SSL Certificates (all waziup.io and related domains)
