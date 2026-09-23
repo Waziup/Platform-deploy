@@ -182,11 +182,7 @@ echo "17 */12 * * * root /usr/local/sbin/certbot-renew.sh" > /etc/cron.d/certbot
 
 
 # 11. Attach instance to ECS cluster
-mkdir -p /etc/ecs
 echo "ECS_CLUSTER=waziup-frontend" >> /etc/ecs/ecs.config
-echo "ECS_BACKEND_HOST=" >> /etc/ecs/ecs.config
-
-systemctl enable --now ecs
 
 
 # 12. Send notification email with the OpenVPN profile and certificate expiry details
