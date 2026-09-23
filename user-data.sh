@@ -55,9 +55,7 @@ curl -fsSL https://raw.githubusercontent.com/angristan/openvpn-install/master/op
 chmod 700 /usr/local/sbin/openvpn-install
 /usr/local/sbin/openvpn-install install \
   --endpoint vpn.waziup.org \
-  --client waziup \
-  --no-color \
-  --log /var/log/openvpn-install.log
+  --client waziup
 
 
 # 7. Issue HTTP Standalone SSL Certificates (all waziup.io and related domains)
