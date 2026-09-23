@@ -7,14 +7,14 @@
 
 set -Eeuox pipefail
 
-# 0. Configure default SSH access
+# 1. Configure default SSH access
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDf4iVKWrUaf8uV2Y4JIYovicPoqCIJRNlTpseFlizzMCa2CpicyrXgbvaZN6TeJoGuPlVMH0hzmMPuezDFyrSWpn71YBMT8KKXhB5jbR0RrMVSCqLlgWdXzmjeH1qxhdY1bu/q9t1oot6MWYEXkdTJOwKwDI8jzwiSfoZu1LR6tLNNdHAFLI8/NF+UKcvYCS8lIr9zF3zPBdMR7Y7rg973wW+JFUFuk5typa6i7EfFcT74j7lrgeO/lZgJY0BG1J5jsgiXDn37NrcgupJMPrJiW2y25RnflMJQ0XIp4DCblviJxEOFUflW9rZ8xowqbY0nM82v7y9eI6zHZAP3qSeB9Eo6hE9Lv1KavgVs9ilSZJc1w8FhHd3se/3mWqUqqWWoiLvWm3QvjCaZ/DLU9gZAvCzPwnicoQ+89JhppW9vsbK4SZM/avo4lIevqkOtrY0CjaL+0vZF2ow16laWP4f226nyJ5gSmPA1b6Ml8BERDE0wYWeMdKyp8Bmd7JmJXTk= cdupont" >> /home/ec2-user/.ssh/authorized_keys
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCYaBsTtmINbbUuFQ/ElY2ni/7QZltmr56hEzdHVmKpN3lPZY1Q01L5TokbYU7tQMRc2ZDwqLvmLrTpF5uCZe8bwBKjKlM4PVasdX/uvnCoc6gfugtjibacXALHzbPawdgeT9H5P78lU9g0hECt32D0AvOqWa9VuBruYXk9NfU0nXTQERrNffpFmQVb5FF2ibG2wGU4MCe3lhmKZou2OgvTSgGQkZSnQv3rkEpB3G7Zy9fnGWdlbbAmlYod0B7XWtTy+HKDNRD4ahbKexs3nqR7We4JHsUSLtTotpC6aL5Aly+pWDMEaUZ71a8dvVT8VHmbDrR6LYeo7+/lqZKNrP3htCafzOkAK6PXL0rHt1ZSdxRjmOOjMtUd9Am0/lL14BOwI82F3vVl/Ui3pOF2FWMSgNHflpY27EkoAC7BNPc6/Jqjh6lY24PO36Cnry2PboWtpzTFxRvJiMsGiyLjagSZ5pFI6KP8olrrvKdw6ntL8+KGrl5A0blWqA2Z0HL287eFBLSHnJaHxmWdL+nEMLebp/a8/I4eVQc9y7AVy1H39Lvj5WShmGB+IOHIMRG5NN5ByoTt3i/KgtC2Zd5PawjAvMlV2kbuFz+U7057hzPL/WbhELkpDJ3LuGug1aoRn6Rs6lVfGw7rg5lkBj37M/Ilpt9syj1rfG+6sxwDwVcfVw== johann.forster@waziup.org" >> /home/ec2-user/.ssh/authorized_keys
 chmod 600 /home/ec2-user/.ssh/authorized_keys
 chown ec2-user:ec2-user /home/ec2-user/.ssh/authorized_keys
 
 
-# 1. Update packages & install Certbot, Cronie, and Python Pip
+# 2. Update packages & install Certbot, Cronie, and Python Pip
 dnf update -y
 dnf swap curl-minimal curl -y
 dnf install -y certbot cronie python3-pip ecs-init
@@ -29,13 +29,13 @@ python3 -m venv /opt/certbot/
 ln -sf /opt/certbot/bin/certbot /usr/bin/certbot
 
 
-# 2. Retrieve Instance ID and AWS Region via IMDSv2
+# 3. Retrieve Instance ID and AWS Region via IMDSv2
 TOKEN=$(curl -s -S -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
 INSTANCE_ID=$(curl -s -S -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
 REGION=$(curl -s -S -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
 
 
-# 3. Retrieve IONOS INI text directly from AWS Secrets Manager
+# 4. Retrieve IONOS INI text directly from AWS Secrets Manager
 aws secretsmanager get-secret-value \
   --secret-id "org/waziup/ionos-credentials" \
   --region "$REGION" \
@@ -45,14 +45,8 @@ aws secretsmanager get-secret-value \
 chmod 600 /root/ionos-credentials.ini
 
 
-# 4. Reattach Elastic IP
+# 5. Reattach Elastic IP
 aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id eipalloc-61f3b74f --allow-reassociation --region "$REGION"
-
-
-# 5. Attach instance to ECS cluster
-systemctl enable --now ecs
-echo ECS_CLUSTER=waziup-frontend >> /etc/ecs/ecs.config
-echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config
 
 
 # 6. Install and configure OpenVPN
@@ -113,7 +107,7 @@ certbot certonly \
   -d 'porai.ai' -d '*.porai.ai'
 
 
-# Notify after a successful certificate renewal and reload the tagged Nginx container
+# 9. Configure the certificate renewal hook and renewal script
 cat > /usr/local/sbin/certbot-renewal-hook.sh <<'EOF'
 #!/bin/bash
 set -u
@@ -168,8 +162,7 @@ rm -f "$RAW_EMAIL"
 EOF
 chmod 700 /usr/local/sbin/certbot-renewal-hook.sh
 
-
-#
+# Create a certbot renewal script
 cat > /usr/local/sbin/certbot-renew.sh <<'EOF'
 #!/bin/bash
 set -u
@@ -186,11 +179,19 @@ set -u
 EOF
 chmod 700 /usr/local/sbin/certbot-renew.sh
 
-# Schedule certificate renewal for all certificates
+# 10. Schedule certificate renewal for all certificates
 echo "17 */12 * * * root /usr/local/sbin/certbot-renew.sh" > /etc/cron.d/certbot
 
 
-# 9. Send notification email with the OpenVPN profile and certificate expiry details
+# 11. Attach instance to ECS cluster
+mkdir -p /etc/ecs
+echo "ECS_CLUSTER=waziup-frontend" >> /etc/ecs/ecs.config
+echo "ECS_BACKEND_HOST=" >> /etc/ecs/ecs.config
+
+systemctl enable --now ecs
+
+
+# 12. Send notification email with the OpenVPN profile and certificate expiry details
 OPENVPN_PROFILE=/root/waziup.ovpn
 test -s "$OPENVPN_PROFILE"
 WAZIUP_CERT_EXPIRY=$(openssl x509 -enddate -noout -in /etc/letsencrypt/live/waziup.io/cert.pem | sed 's/^notAfter=//')
@@ -224,3 +225,11 @@ aws ses send-raw-email \
   --region "$REGION" \
   --raw-message "Data=$(base64 -w 0 "$RAW_EMAIL")"
 rm -f "$RAW_EMAIL"
+
+# 13. Signal to Auto Scaling that this instance is ready
+# # TODO: The template uses a fixed timeout (300s) now
+# aws autoscaling complete-lifecycle-action \
+#   --lifecycle-hook-name "wait-for-user-script" \
+#   --auto-scaling-group-name "Front-End" \
+#   --lifecycle-action-result CONTINUE \
+#   --instance-id "$INSTANCE_ID"
