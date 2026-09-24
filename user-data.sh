@@ -55,7 +55,7 @@ curl -fsSL https://raw.githubusercontent.com/angristan/openvpn-install/master/op
 chmod 700 /usr/local/sbin/openvpn-install
 /usr/local/sbin/openvpn-install install \
   --endpoint "18.195.197.182" \
-  --client waziup
+  --client waziup \
   --tls-sig crypt
 
 
