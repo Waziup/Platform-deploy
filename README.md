@@ -138,7 +138,8 @@ sudo certbot certonly \
   -d kijanicooling.eu -d www.kijanicooling.eu \
   -d kijanispace.eu -d www.kijanispace.eu \
   -d majiup.com -d www.majiup.com \
-  -d app.wazilab.io
+  -d app.wazilab.io \
+  -d spaceiot.staging.waziup.io
 
  docker exec $(docker container ls --quiet --filter label=certbot-renew-hook-target) nginx -s reload
 ```
