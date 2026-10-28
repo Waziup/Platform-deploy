@@ -1,5 +1,6 @@
 #!/bin/bash
 # EC2 user data script for an Amazon Linux 2023 AMI.
+# We use a t2.micro instance type for this setup.
 #
 # Output of this script is collected in 
 #   cat /var/log/cloud-init-output.log
@@ -34,8 +35,28 @@ TOKEN=$(curl -s -S -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec
 INSTANCE_ID=$(curl -s -S -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
 REGION=$(curl -s -S -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
 
+# 4. Attach the database EBS volume
+aws ec2 attach-volume \
+  --volume-id vol-06a7b8c7cbc6c07ba \
+  --instance-id "$INSTANCE_ID" \
+  --device /dev/sdf \
+  --region "$REGION"
 
-# 4. Retrieve IONOS INI text directly from AWS Secrets Manager
+echo "Waiting for data volume to become attached..."
+until [ -b "/dev/xvdf" ]; do
+  sleep 2
+done
+
+mkdir -p "/mnt/data"
+
+if file -s "/dev/xvdf" | grep -q "data"; then
+  echo "Formatting /dev/xvdf with XFS..."
+  mkfs.xfs -f "/dev/xvdf"
+fi
+
+mount -t xfs "/dev/xvdf" "/mnt/data"
+
+# 5. Retrieve IONOS INI text directly from AWS Secrets Manager
 aws secretsmanager get-secret-value \
   --secret-id "org/waziup/ionos-credentials" \
   --region "$REGION" \
@@ -45,11 +66,11 @@ aws secretsmanager get-secret-value \
 chmod 600 /root/ionos-credentials.ini
 
 
-# 5. Reattach Elastic IP
+# 6. Reattach Elastic IP
 aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id eipalloc-61f3b74f --allow-reassociation --region "$REGION"
 
 
-# 6. Install and configure OpenVPN
+# 7. Install and configure OpenVPN
 curl -fsSL https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh \
   -o /usr/local/sbin/openvpn-install
 chmod 700 /usr/local/sbin/openvpn-install
@@ -59,7 +80,7 @@ chmod 700 /usr/local/sbin/openvpn-install
   --tls-sig crypt
 
 
-# 7. Issue HTTP Standalone SSL Certificates (all waziup.io and related domains)
+# 8. Issue HTTP Standalone SSL Certificates (all waziup.io and related domains)
 mkdir -p /var/www/html/.well-known/acme-challenge/
 
 certbot certonly \
@@ -93,7 +114,7 @@ certbot certonly \
   -d spaceiot.staging.waziup.io
 
 
-# 8. Issue IONOS DNS-01 SSL Certificates (porai.ai & *.porai.ai)
+# 9. Issue IONOS DNS-01 SSL Certificates (porai.ai & *.porai.ai)
 certbot certonly \
   --cert-name porai.ai \
   --email contact@waziup.org \
@@ -107,7 +128,7 @@ certbot certonly \
   -d 'porai.ai' -d '*.porai.ai'
 
 
-# 9. Configure the certificate renewal hook and renewal script
+# 10. Configure the certificate renewal hook and renewal script
 cat > /usr/local/sbin/certbot-renewal-hook.sh <<'EOF'
 #!/bin/bash
 set -u
@@ -179,15 +200,15 @@ set -u
 EOF
 chmod 700 /usr/local/sbin/certbot-renew.sh
 
-# 10. Schedule certificate renewal for all certificates
+# 11. Schedule certificate renewal for all certificates
 echo "17 */12 * * * root /usr/local/sbin/certbot-renew.sh" > /etc/cron.d/certbot
 
 
-# 11. Attach instance to ECS cluster
+# 12. Attach instance to ECS cluster
 echo "ECS_CLUSTER=waziup-frontend" >> /etc/ecs/ecs.config
 
 
-# 12. Send notification email with the OpenVPN profile and certificate expiry details
+# 13. Send notification email with the OpenVPN profile and certificate expiry details
 OPENVPN_PROFILE=/root/waziup.ovpn
 test -s "$OPENVPN_PROFILE"
 WAZIUP_CERT_EXPIRY=$(openssl x509 -enddate -noout -in /etc/letsencrypt/live/waziup.io/cert.pem | sed 's/^notAfter=//')
@@ -222,7 +243,7 @@ aws ses send-raw-email \
   --raw-message "Data=$(base64 -w 0 "$RAW_EMAIL")"
 rm -f "$RAW_EMAIL"
 
-# 13. Signal to Auto Scaling that this instance is ready
+# 14. Signal to Auto Scaling that this instance is ready
 # # TODO: The template uses a fixed timeout (300s) now
 # aws autoscaling complete-lifecycle-action \
 #   --lifecycle-hook-name "wait-for-user-script" \
