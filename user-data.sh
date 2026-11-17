@@ -55,6 +55,7 @@ if file -s "/dev/xvdf" | grep -q "data"; then
 fi
 
 mount -t xfs "/dev/xvdf" "/mnt/data"
+chown -R "ec2-user:ec2-user" "/mnt/data"
 
 # 5. Retrieve IONOS INI text directly from AWS Secrets Manager
 aws secretsmanager get-secret-value \
